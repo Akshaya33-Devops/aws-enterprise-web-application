@@ -9,32 +9,28 @@ A production-style cloud architecture built on AWS demonstrating real-world DevO
 
 ## 📌 Project Summary
 
-Designed and deployed a **production-style, fault-tolerant web application** on AWS from scratch — covering custom networking, compute, database, load balancing, auto scaling, monitoring, and alerting. Every layer of the architecture was manually configured to mirror how real cloud teams operate.
+Designed and deployed a production-style, fault-tolerant web application on AWS from scratch — covering custom networking, compute, load balancing, auto scaling, monitoring, and alerting. Every layer of the architecture was manually configured to mirror how real cloud teams operate.
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-                        ┌─────────────────────────────────────────┐
-                        │              prod-vpc (10.0.0.0/16)     │
-                        │                                         │
-    Internet ──────► Application Load Balancer (web-alb)          │
-                        │       (public-subnet-1, public-subnet-2)│
-                        │              ↓           ↓              │
-                        │    ┌─────────────┐ ┌─────────────┐      │
-                        │    │  EC2 (AZ-a) │ │  EC2 (AZ-b) │      │
-                        │    │  web-server │ │  ASG launch │      │
-                        │    └──────┬──────┘ └──────┬──────┘      │
-                        │           └────────┬───────┘            │
-                        │                    ↓                    │
-                        │          ┌──────────────────┐           │
-                        │          │                  │           │
-                        │          │ (private subnets)│           │
-                        │          └──────────────────┘           │
-                        │                                         │
-                        │   CloudWatch ──► SNS ──► Gmail Alert    │
-                        └─────────────────────────────────────────┘
+ Internet
+    │
+    ▼
+ALB
+    │
+    ▼
+Target Group
+    │
+    ▼
+Auto Scaling Group
+ ┌───────┴───────┐
+ ▼               ▼
+EC2-A         EC2-B
+
+CloudWatch → SNS → Gmail
 ```
 
 **Traffic Flow:** `User → ALB → Target Group → Auto Scaling Group (EC2) → Apache`  
@@ -69,7 +65,7 @@ Designed and deployed a **production-style, fault-tolerant web application** on 
 | Public Route Table | public-rt | 0.0.0.0/0 → prod-igw |
 | Private Route Table | private-rt | Local route only (no internet) |
 
-**Design Decision:** EC2 instances and the ALB sit in **public subnets** for internet access. The RDS database is placed in **private subnets** — it is never directly accessible from the internet, only reachable from the web tier via `db-sg`.
+**Design Decision:** EC2 instances and the ALB sit in **public subnets** for internet access. The Application Load Balancer and EC2 instances are deployed across multiple subnets to provide high availability and fault tolerance.
 
 ---
 
@@ -82,12 +78,7 @@ Designed and deployed a **production-style, fault-tolerant web application** on 
 | HTTPS | 443 | 0.0.0.0/0 |
 | SSH | 22 | My IP only |
 
-### `db-sg` — Applied to RDS
-| Rule | Port | Source |
-|---|---|---|
-| MySQL/Aurora | 3306 | web-sg only |
-
-**Design Decision:** The database security group only allows inbound traffic **from the web security group**, not from any IP address. This enforces the principle of least privilege at the network layer.
+**Design Decision:** Security groups are configured using the principle of least privilege, allowing only the required traffic to reach the web infrastructure.
 
 ---
 
@@ -161,7 +152,7 @@ Real issues encountered and resolved during the build:
 | Skill | Evidence |
 |---|---|
 | AWS Networking | Custom VPC, 4 subnets, IGW, public/private route tables |
-| Security Design | Security groups with least-privilege rules, RDS in private subnet |
+| Security Design | Security groups with least-privilege rules for web infrastructure |
 | High Availability | ALB + ASG across 2 AZs, min 2 instances always running |
 | Fault Tolerance | If one EC2 fails, ASG automatically launches a replacement |
 | Monitoring | CloudWatch alarm on CPU metric |
@@ -176,14 +167,13 @@ Real issues encountered and resolved during the build:
 
 ```
 • Designed and deployed a highly available AWS web application using 
-  VPC (public/private subnets), EC2, ALB, Auto Scaling, and RDS MySQL 
+  VPC (public/private subnets), EC2, ALB, and Auto Scaling 
   across two availability zones in ap-south-1.
 
 • Configured CloudWatch CPU alarms with SNS email notifications for 
   real-time incident alerting.
 
-• Secured the database tier by placing RDS in private subnets with 
-  a security group allowing MySQL access only from the web security group.
+• Configured security groups to allow only required HTTP, HTTPS, and SSH traffic following least-privilege security practices.
 
 • Resolved 6 real infrastructure issues during deployment including 
   SSH connectivity, Target Group VPC mismatch, and SNS subscription failures.
@@ -222,4 +212,6 @@ Built as part of hands-on cloud engineering portfolio — ap-south-1 (Mumbai)
 ---
 
 *This project was built entirely manually through the AWS Console — no CloudFormation or Terraform — to develop a deep understanding of each service and how they connect.*
+
+## 🎯 Business Problem Solved
 This project solves the problem of deploying a highly available web application that can automatically handle traffic spikes, recover from failures, and provide real-time monitoring alerts without manual intervention.
