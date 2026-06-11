@@ -17,21 +17,21 @@ Designed and deployed a **production-style, fault-tolerant web application** on 
 
 ```
                         ┌─────────────────────────────────────────┐
-                        │              prod-vpc (10.0.0.0/16)      │
+                        │              prod-vpc (10.0.0.0/16)     │
                         │                                         │
-   Internet ──────► Application Load Balancer (web-alb)          │
-                        │         (public-subnet-1, public-subnet-2)│
+    Internet ──────► Application Load Balancer (web-alb)          │
+                        │       (public-subnet-1, public-subnet-2)│
                         │              ↓           ↓              │
-                        │    ┌─────────────┐ ┌─────────────┐     │
-                        │    │  EC2 (AZ-a) │ │  EC2 (AZ-b) │     │
-                        │    │  web-server │ │  ASG launch │     │
-                        │    └──────┬──────┘ └──────┬──────┘     │
+                        │    ┌─────────────┐ ┌─────────────┐      │
+                        │    │  EC2 (AZ-a) │ │  EC2 (AZ-b) │      │
+                        │    │  web-server │ │  ASG launch │      │
+                        │    └──────┬──────┘ └──────┬──────┘      │
                         │           └────────┬───────┘            │
                         │                    ↓                    │
-                        │          ┌──────────────────┐          │
-                        │          │   RDS MySQL       │          │
-                        │          │ (private subnets) │          │
-                        │          └──────────────────┘          │
+                        │          ┌──────────────────┐           │
+                        │          │                  │           │
+                        │          │ (private subnets)│           │
+                        │          └──────────────────┘           │
                         │                                         │
                         │   CloudWatch ──► SNS ──► Gmail Alert    │
                         └─────────────────────────────────────────┘
@@ -50,7 +50,6 @@ Designed and deployed a **production-style, fault-tolerant web application** on 
 | Security | Security Groups, IAM Roles | Access control |
 | Compute | EC2, Auto Scaling Group | Web servers |
 | Load Balancing | Application Load Balancer, Target Group | Traffic distribution |
-| Database | RDS MySQL | Persistent data layer |
 | Monitoring | CloudWatch | CPU & health metrics |
 | Alerting | SNS | Email notification on threshold |
 | Backup | EBS Snapshots, AMI | Disaster recovery |
