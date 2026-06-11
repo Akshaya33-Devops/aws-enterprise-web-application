@@ -1,4 +1,6 @@
-# AWS Enterprise Web Application
+# AWS Highly Available Enterprise Web Application (Production-Style DevOps Project)
+A production-style cloud architecture built on AWS demonstrating real-world DevOps practices including high availability, auto scaling, monitoring, and secure networking.
+
 ### Highly Available, Auto-Scaling Web Infrastructure with Monitoring & Alerting
 
 > **Fresher Cloud Engineer Portfolio Project** | AWS | Linux | Networking | Monitoring
@@ -221,3 +223,4 @@ Built as part of hands-on cloud engineering portfolio — ap-south-1 (Mumbai)
 ---
 
 *This project was built entirely manually through the AWS Console — no CloudFormation or Terraform — to develop a deep understanding of each service and how they connect.*
+This project solves the problem of deploying a highly available web application that can automatically handle traffic spikes, recover from failures, and provide real-time monitoring alerts without manual intervention.
